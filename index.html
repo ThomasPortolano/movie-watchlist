@@ -10,21 +10,27 @@
             <button id="search-button">Search</button>
         </form>
         <main>
-            <div id="search-results">
-                <div id="film-container">
-                    <div id="poster"><img src="https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg" alt="Batman vs Superman"></div>
+            <div class="search-results">
+                <div class="film-container">
+                    <div class="poster"><img src="https://media.themoviedb.org/t/p/w300_and_h450_bestv2/hSPeF1zoYH8kCOhFMu7x3B55zu6.jpg"></img></div>
+                        <!-- 
+                            full size poster url starts with https://image.tmdb.org/t/p/w600_and_h900_bestv2/
+                            then add the poster_path from the api response
+                        -->
                     <div id="intro-container">
-                        <div id="title">Batman vs Superman: Dawn of Justice</div>
-                        <div id="rating"></div>
-                        <button id="add-watchlist">Add</button>
+                        <div class="title">Scooby-Doo! & Batman: The Brave and the Bold</div>
+                        <div class="rating">7.283</div>
+                        <button class="add-watchlist">Add</button>
                     </div>
                     <div id="classification-container">
-                        <div id="release-date">2016</div>
-                        <div id="runtime"></div>
-                        <div id="genre"></div>
+                        <div class="release-date">2018-01-31</div>
+                        <!-- Not available in the search API-->
+                        <div id="runtime">1h16</div>
+                        <!-- Available but mapping is needed-->
+                        <div id="genre">Animation, Comedy, Action, Family, Science, Fiction</div>
                     </div>
-                    <div id="synopsis-container">
-                        <div id="synopsis"></div>
+                    <div id="overview-container">
+                        <div class="overview"></div>
                 </div>
             </div>
         </main>
