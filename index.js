@@ -47,32 +47,36 @@ searchButton.addEventListener("click", (event) => {
             for (let i = 0; i < data.results.length; i++) {
                 html += `
                 <div id="film-container">
-                    <div class="poster">
-                        <img src="https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.results[i].poster_path}" alt="${data.results[i].original_title} poster">
-                    </div>
-                    <div id="intro-container">
-                        <div class="title">
-                            ${data.results[i].original_title}
+                    <div class="film-container">
+                        <div class="poster">
+                            <img src="https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.results[i].poster_path}" alt="${data.results[i].original_title} poster">
                         </div>
-                        <div class="rating">
-                            ${data.results[i].vote_average}
-                        </div>
-                    </div>
-                    <div id="classification-container">
-                        <div class="release-date">
-                            ${data.results[i].release_date}
-                        </div>
-                        <div class="runtime">
-                            TBD
-                        </div>
-                        <div class="genre">
-                            TBD
-                        </div>
-                    </div>
-                    <div class="overview-container">
-                        <div class="overview">
-                            ${data.results[i].overview}
-                        </div>
+                        <div id="film-details-container">
+                            <div id="intro-container">
+                                <div class="title">
+                                    ${data.results[i].original_title}
+                                </div>
+                                <div class="rating">
+                                ⭐ ${data.results[i].vote_average}
+                                </div>
+                            </div>
+                            <div id="classification-container">
+                                <div class="release-date">
+                                    ${data.results[i].release_date}
+                                </div>
+                                <div class="runtime">
+                                    TBD
+                                </div>
+                                <div class="genre">
+                                    TBD
+                                </div>
+                            </div>
+                            <div class="overview-container">
+                                <div class="overview">
+                                    ${(data.results[i].overview).substring(0, 137)}
+                                </div>
+                            </div>
+                        </div>    
                     </div>
                 </div>
                 `
@@ -83,5 +87,5 @@ searchButton.addEventListener("click", (event) => {
             // releaseDateEl.textContent = data.results[0].release_date
             // overviewEl.textContent = data.results[0].overview
         }
-        posterEl.innerHTML = html
+        resultsEl.innerHTML = html
     })})
