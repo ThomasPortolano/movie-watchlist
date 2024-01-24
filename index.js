@@ -1,5 +1,3 @@
-// const url = "http://omdbapi.com/?";
-// const apiKey = "apikey=7d5d7dd5"
 const url = "https://api.themoviedb.org/3/"
 const apiKey = "59ab02093e40c14bbbdccbc69b8198b9"
 const authToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1OWFiMDIwOTNlNDBjMTRiYmJkY2NiYzY5YjgxOThiOSIsInN1YiI6IjY1YWY3MWI5ODQ4ZWI5MDBhYzljY2ZlMiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ._cYP2CGeLxnQLCJmh7-uXPX0umrAhR1Zb7475B3lvIc"
@@ -10,40 +8,25 @@ const options = {
         "Authorization": `Bearer ${authToken}`
     }
 }
-
+let id = []
 const resultsEl = document.querySelector(".search-results");
 const titleEl = document.querySelector(".title");
 const ratingEl = document.querySelector(".rating");
 const releaseDateEl = document.querySelector(".release-date");
 const overviewEl = document.querySelector(".overview");
 const posterEl = document.querySelector(".poster");
+const runtimeEl = document.querySelector(".runtime")
 
 const searchMovieParams = "search/movie?query="
 
 const searchButton = document.querySelector("#search-button");
 const searchInput = document.querySelector("#input-field");
 
-// On click to search, the keyword is passed to the API query
-// searchButton.addEventListener("click", (event) => {
-//     event.preventDefault();
-//     let search = `&tt=${searchInput.value}`
-
-//     fetch(url + apiKey + `&s=${search}`)
-//     .then(response => response.json())
-//     .then(data => console.log(data))
-// })
-
-searchButton.addEventListener("click", (event) => {
-    event.preventDefault();
+function renderResults(){
     fetch(url + searchMovieParams + searchInput.value, options)
         .then (res => res.json())
         .then(data => {
-            event.preventDefault();
             let html = ''
-            // for (let movie in data.results) {
-            //     html += `
-            //     <img src="https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.results[movie].poster_path}" alt="${data.results[movie].original_title} poster">
-            //     `}
             for (let i = 0; i < data.results.length; i++) {
                 html += `
                 <div id="film-container">
@@ -65,7 +48,6 @@ searchButton.addEventListener("click", (event) => {
                                     ${data.results[i].release_date}
                                 </div>
                                 <div class="runtime">
-                                    TBD
                                 </div>
                                 <div class="genre">
                                     TBD
@@ -80,12 +62,41 @@ searchButton.addEventListener("click", (event) => {
                     </div>
                 </div>
                 `
-
-            // posterEl.innerHTML = `<img src="https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.results[0].poster_path}" alt="${data.results[0].original_title} poster">`
-            // titleEl.textContent = data.results[0].original_title
-            // ratingEl.textContent = data.results[0].vote_average
-            // releaseDateEl.textContent = data.results[0].release_date
-            // overviewEl.textContent = data.results[0].overview
+                id.push(data.results[i].id)
         }
         resultsEl.innerHTML = html
-    })})
+        
+    })
+}
+
+searchButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    renderResults();
+    getMovieDetails(id);
+    })
+
+    function getMovieDetails(id){
+        let html = ''
+        let runtimeArr = []
+        let fetchPromises = []
+    
+        for (let i = 0; i < id.length; i++) {
+            let fetchPromise = fetch(url + `movie/${id[i]}`, options)
+            .then (res => res.json())
+            .then(data => {
+                runtimeArr.push(data.runtime)
+            })
+    
+            fetchPromises.push(fetchPromise)
+        }
+
+    Promise.all(fetchPromises).then(() => {
+        console.log(runtimeArr)
+
+        let runtimeElements = document.querySelectorAll('.runtime');
+        for (let i = 0; i < runtimeArr.length; i++){
+            if(runtimeElements[i]) {
+                runtimeElements[i].innerHTML = runtimeArr[i];
+            }
+        }
+    })}
