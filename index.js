@@ -73,30 +73,46 @@ searchButton.addEventListener("click", (event) => {
     event.preventDefault();
     renderResults();
     getMovieDetails(id);
-    })
+})
 
-    function getMovieDetails(id){
-        let html = ''
-        let runtimeArr = []
-        let fetchPromises = []
-    
-        for (let i = 0; i < id.length; i++) {
-            let fetchPromise = fetch(url + `movie/${id[i]}`, options)
-            .then (res => res.json())
-            .then(data => {
-                runtimeArr.push(data.runtime)
-            })
-    
-            fetchPromises.push(fetchPromise)
-        }
+    let runtimeArr = []
+
+function getMovieDetails(id){
+    let fetchPromises = []
+    let genreArr = []
+
+    for (let i = 0; i < id.length; i++) {
+        let fetchPromise = fetch(url + `movie/${id[i]}`, options)
+        .then (res => res.json())
+        .then(data => {
+            runtimeArr.push(data.runtime)
+            genreArr.push(data.genres)
+            // genreArr = []
+        })
+
+        fetchPromises.push(fetchPromise)
+    }
 
     Promise.all(fetchPromises).then(() => {
         console.log(runtimeArr)
-
-        let runtimeElements = document.querySelectorAll('.runtime');
-        for (let i = 0; i < runtimeArr.length; i++){
-            if(runtimeElements[i]) {
-                runtimeElements[i].innerHTML = runtimeArr[i];
+        renderRunTime() 
+        let genreElements = document.querySelectorAll('.genre');
+        for (let i = 0; i < genreArr.length; i++){
+            if(genreElements[i]) {
+                renderGenre(genreArr[i], genreElements[i]);
             }
+    }})}
+
+function renderRunTime() {
+    let runtimeElements = document.querySelectorAll('.runtime');
+    for (let i = 0; i < runtimeArr.length; i++){
+        if(runtimeElements[i]) {
+            runtimeElements[i].innerHTML = runtimeArr[i];
         }
-    })}
+    }
+}
+
+function renderGenre(genres, targetElement) {
+    let genreNames = genres.map(genre => genre.name).join(', ');
+    targetElement.textContent = genreNames;
+}
