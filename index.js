@@ -44,8 +44,6 @@ function renderResults(){
                                 ⭐ ${data.results[i].vote_average}
                                 </div>
                                 <button class="add-to-watchlist">Add</button>
-                                <div class="add-watchlist" id=${data.results[i].id}>
-                                </div>
                             </div>
                             <div id="classification-container">
                                 <div class="release-date">
@@ -53,8 +51,6 @@ function renderResults(){
                                 </div>
                                 <div class="runtime"></div>
                                 <div class="genre" id="${data.results[i].id}"></div>
-                                <div class="runtime"></div>
-                                <div class="genre"></div>
                             </div>
                             <div class="overview-container">
                                 <div class="overview">
