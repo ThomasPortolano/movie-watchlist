@@ -17,6 +17,7 @@ const overviewEl = document.querySelector(".overview");
 const posterEl = document.querySelector(".poster");
 const runtimeEl = document.querySelector(".runtime")
 
+
 const searchMovieParams = "search/movie?query="
 
 const searchButton = document.querySelector("#search-button");
@@ -30,7 +31,7 @@ function renderResults(){
             for (let i = 0; i < data.results.length; i++) {
                 html += `
                 <div id="film-container">
-                    <div class="film-container">
+                    <div class="film-container" data-movie-id=${data.results[i].id}>
                         <div class="poster">
                             <img src="https://image.tmdb.org/t/p/w300_and_h450_bestv2/${data.results[i].poster_path}" alt="${data.results[i].original_title} poster">
                         </div>
@@ -42,16 +43,14 @@ function renderResults(){
                                 <div class="rating">
                                 ⭐ ${data.results[i].vote_average}
                                 </div>
+                                <button class="add-to-watchlist">Add</button>
                             </div>
                             <div id="classification-container">
                                 <div class="release-date">
                                     ${data.results[i].release_date}
                                 </div>
-                                <div class="runtime">
-                                </div>
-                                <div class="genre">
-                                    TBD
-                                </div>
+                                <div class="runtime"></div>
+                                <div class="genre" id="${data.results[i].id}"></div>
                             </div>
                             <div class="overview-container">
                                 <div class="overview">
@@ -94,25 +93,72 @@ function getMovieDetails(id){
     }
 
     Promise.all(fetchPromises).then(() => {
-        console.log(runtimeArr)
+        // console.log(runtimeArr)
         renderRunTime() 
         let genreElements = document.querySelectorAll('.genre');
         for (let i = 0; i < genreArr.length; i++){
             if(genreElements[i]) {
                 renderGenre(genreArr[i], genreElements[i]);
             }
-    }})}
-
-function renderRunTime() {
-    let runtimeElements = document.querySelectorAll('.runtime');
-    for (let i = 0; i < runtimeArr.length; i++){
-        if(runtimeElements[i]) {
-            runtimeElements[i].innerHTML = runtimeArr[i];
         }
-    }
+
+//         const addWatchlistEls = document.querySelectorAll(".add-to-watchlist");
+//         // const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+//         addWatchlistEls.forEach(el => {
+//             el.addEventListener("click", (event) => {
+//                 console.log(event.target.id);
+//                 // if (event.target.id === )
+//             });
+//         });
+        
+//     })
+// }
+
+            function renderRunTime() {
+                let runtimeElements = document.querySelectorAll('.runtime');
+                for (let i = 0; i < runtimeArr.length; i++){
+                    if(runtimeElements[i]) {
+                        runtimeElements[i].innerHTML = runtimeArr[i];
+                    }
+                }
+            }
+
+            function renderGenre(genres, targetElement) {
+                let genreNames = genres.map(genre => genre.name).join(', ');
+                targetElement.textContent = genreNames;
+            }
+
+            resultsEl.addEventListener('click', (event) => {
+                if (event.target.classList.contains('add-to-watchlist')) {
+                    let movieId = event.target.closest('.film-container').dataset.movieId;
+                    addToWatchList(movieId);
+                }
+            });
+
+            function addToWatchList(movieId){
+                fetch(url + `movie/${movieId}`, options)
+                .then(res => res.json())
+                .then(movie => {
+                    localStorage.setItem('movie-${movieId}', JSON.stringify(movie)
+                )})
+                .catch(error => {
+                    console.log('Error:', error());
+                })
+            }
+        })
 }
 
-function renderGenre(genres, targetElement) {
-    let genreNames = genres.map(genre => genre.name).join(', ');
-    targetElement.textContent = genreNames;
-}
+// function handleClick(event) {
+
+    // if (event.target.classList.contains('add-to-watchlist')) {
+    //     let id = event.target.id;
+    //     let movie = movies.find(movie => movie.id === id);
+    //     if (movie) {
+    //         alert('Movie already in watchlist');
+    //     } else {
+    //         movies.push(movie);
+    //         localStorage.setItem('movies', JSON.stringify(movies));
+    //     }
+    // }
+// }
+
