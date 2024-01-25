@@ -8,7 +8,10 @@ const options = {
         "Authorization": `Bearer ${authToken}`
     }
 }
-let id = []
+let id = [] // global array used to store each movie id. this array is flushed after each search
+let runtimeArr = [] // global array used to store each movie runtime. this array is flushed after each search
+
+
 const resultsEl = document.querySelector(".search-results");
 const titleEl = document.querySelector(".title");
 const ratingEl = document.querySelector(".rating");
@@ -16,18 +19,27 @@ const releaseDateEl = document.querySelector(".release-date");
 const overviewEl = document.querySelector(".overview");
 const posterEl = document.querySelector(".poster");
 const runtimeEl = document.querySelector(".runtime")
+// const classificationContainer = document.querySelector('#classification-container');
 
 const searchMovieParams = "search/movie?query="
 
 const searchButton = document.querySelector("#search-button");
 const searchInput = document.querySelector("#input-field");
 
+// 1.  On click, I capture the search input value and use it to query two API, the search Movie API and the Movie Details API
+searchButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    renderResults(); 
+    getMovieDetails(id);
+})
+
+// 2. the render function will both fetch data (except rating and genre) and render the results on the page
 function renderResults(){
-    fetch(url + searchMovieParams + searchInput.value, options)
+    fetch(url + searchMovieParams + searchInput.value, options) // 3. the fetch query consists in the base url, the search param and the input value
         .then (res => res.json())
         .then(data => {
             let html = ''
-            for (let i = 0; i < data.results.length; i++) {
+            for (let i = 0; i < data.results.length; i++) { // 4. I loop through all the results in the results arrays and store the html in the html variable
                 html += `
                 <div id="film-container">
                     <div class="film-container">
@@ -42,16 +54,15 @@ function renderResults(){
                                 <div class="rating">
                                 ⭐ ${data.results[i].vote_average}
                                 </div>
+                                <div class="add-watchlist" id=${data.results[i].id}>
+                                </div>
                             </div>
                             <div id="classification-container">
                                 <div class="release-date">
                                     ${data.results[i].release_date}
                                 </div>
-                                <div class="runtime">
-                                </div>
-                                <div class="genre">
-                                    TBD
-                                </div>
+                                <div class="runtime"></div>
+                                <div class="genre"></div>
                             </div>
                             <div class="overview-container">
                                 <div class="overview">
@@ -62,57 +73,44 @@ function renderResults(){
                     </div>
                 </div>
                 `
-                id.push(data.results[i].id)
+                id.push(data.results[i].id) // 5. I also capture the id of each result and store it in an array that I will use in a second time
+                 
         }
-        resultsEl.innerHTML = html
-        
+        resultsEl.innerHTML = html 
+        getMovieDetails() // 6. I call this async function to fetch the remaining movie details (runtime and genre)
     })
 }
 
-searchButton.addEventListener("click", (event) => {
-    event.preventDefault();
-    renderResults();
-    getMovieDetails(id);
-})
-
-    let runtimeArr = []
-
-function getMovieDetails(id){
+// 7. Following the call in the final .then of the renderResults function, I use the id array to fetch the remaining movie details
+function getMovieDetails(){
     let fetchPromises = []
     let genreArr = []
-
+    let runtimeArr = []
+  
     for (let i = 0; i < id.length; i++) {
         let fetchPromise = fetch(url + `movie/${id[i]}`, options)
         .then (res => res.json())
         .then(data => {
             runtimeArr.push(data.runtime)
             genreArr.push(data.genres)
-            // genreArr = []
         })
-
         fetchPromises.push(fetchPromise)
     }
 
     Promise.all(fetchPromises).then(() => {
-        console.log(runtimeArr)
-        renderRunTime() 
-        let genreElements = document.querySelectorAll('.genre');
-        for (let i = 0; i < genreArr.length; i++){
-            if(genreElements[i]) {
-                renderGenre(genreArr[i], genreElements[i]);
-            }
-    }})}
-
-function renderRunTime() {
-    let runtimeElements = document.querySelectorAll('.runtime');
-    for (let i = 0; i < runtimeArr.length; i++){
-        if(runtimeElements[i]) {
-            runtimeElements[i].innerHTML = runtimeArr[i];
+        for (let i = 0; i < runtimeArr.length; i++){
+            let runtimeElements = document.querySelectorAll('.runtime');
+            if(runtimeElements[i]) {
+                runtimeElements[i].innerHTML = runtimeArr[i];
+            } else {runtimeElements[i].innerHTML = "N/A"}
         }
-    }
-}
-
-function renderGenre(genres, targetElement) {
-    let genreNames = genres.map(genre => genre.name).join(', ');
-    targetElement.textContent = genreNames;
-}
+        for (let i = 0; i < genreArr.length; i++){   
+            let genreNames = genreArr[i].map(genre => genre.name).join(', ');
+            console.log(genreNames); // Logs the genre names for the i-th movie, joined by commas
+        
+            let genreContainers = document.querySelectorAll('.genre'); // Changed the selector to '.genre'
+            if(genreContainers[i]) {
+                genreContainers[i].textContent = genreNames; // Clear the existing content
+            }
+        }
+    })}
