@@ -44,6 +44,8 @@ function renderResults(){
                                 ⭐ ${data.results[i].vote_average}
                                 </div>
                                 <button class="add-to-watchlist">Add</button>
+                                <div class="add-watchlist" id=${data.results[i].id}>
+                                </div>
                             </div>
                             <div id="classification-container">
                                 <div class="release-date">
@@ -51,6 +53,8 @@ function renderResults(){
                                 </div>
                                 <div class="runtime"></div>
                                 <div class="genre" id="${data.results[i].id}"></div>
+                                <div class="runtime"></div>
+                                <div class="genre"></div>
                             </div>
                             <div class="overview-container">
                                 <div class="overview">
@@ -102,18 +106,6 @@ function getMovieDetails(id){
             }
         }
 
-//         const addWatchlistEls = document.querySelectorAll(".add-to-watchlist");
-//         // const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
-//         addWatchlistEls.forEach(el => {
-//             el.addEventListener("click", (event) => {
-//                 console.log(event.target.id);
-//                 // if (event.target.id === )
-//             });
-//         });
-        
-//     })
-// }
-
             function renderRunTime() {
                 let runtimeElements = document.querySelectorAll('.runtime');
                 for (let i = 0; i < runtimeArr.length; i++){
@@ -141,8 +133,8 @@ function getMovieDetails(id){
                 .then(movie => {
                     localStorage.setItem('movie-${movieId}', JSON.stringify(movie)
                 )})
-                .catch(error => {
-                    console.log('Error:', error());
+                .catch(err => {
+                    console.log('Error');
                 })
             }
         })
