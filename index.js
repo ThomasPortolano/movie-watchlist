@@ -10,6 +10,7 @@ const options = {
 }
 let id = []
 const resultsEl = document.querySelector(".search-results");
+const watchListEl = document.querySelector(".watchlist-container");
 const titleEl = document.querySelector(".title");
 const ratingEl = document.querySelector(".rating");
 const releaseDateEl = document.querySelector(".release-date");
@@ -21,6 +22,8 @@ const runtimeEl = document.querySelector(".runtime")
 const searchMovieParams = "search/movie?query="
 
 const searchButton = document.querySelector("#search-button");
+
+
 const searchInput = document.querySelector("#input-field");
 
 function renderResults(){
@@ -68,11 +71,17 @@ function renderResults(){
     })
 }
 
+
+if (searchButton) {
+  // Add event listener or perform other operations on searchButton
 searchButton.addEventListener("click", (event) => {
     event.preventDefault();
     renderResults();
     getMovieDetails(id);
 })
+}
+
+
 
     let runtimeArr = []
 
@@ -127,15 +136,67 @@ function getMovieDetails(id){
                 fetch(url + `movie/${movieId}`, options)
                 .then(res => res.json())
                 .then(movie => {
-                    localStorage.setItem('movie-${movieId}', JSON.stringify(movie)
-                )})
+                    localStorage.setItem(`movie-${movieId}`, JSON.stringify(movie))
+                })
                 .catch(err => {
                     console.log('Error');
                 })
             }
+
+            
+            
         })
 }
 
+if (document.readyState === "loading") {  // Loading hasn't finished yet
+    document.addEventListener("DOMContentLoaded", renderWatchList);
+  } else {  // `DOMContentLoaded` has already fired
+    renderWatchList();
+    console.log('ready')
+  }
+
+  function renderWatchList() {
+    let watchList = Object.keys(localStorage);
+    let html = '';
+    for (let i = 0; i < watchList.length; i++) {
+        let movie = JSON.parse(localStorage.getItem(watchList[i]));
+        html += `
+        <div class="film-container" data-movie-id=${movie.id}>
+            <div class="poster">
+                <img src="https://image.tmdb.org/t/p/w300_and_h450_bestv2/${movie.poster_path}" alt="${movie.original_title} poster">
+            </div>
+            <div id="film-details-container">
+                <div id="intro-container">
+                    <div class="title">
+                        ${movie.original_title}
+                    </div>
+                    <div class="rating">
+                    ⭐ ${movie.vote_average}
+                    </div>
+                    <button class="add-to-watchlist">Add</button>
+                </div>
+                <div id="classification-container">
+                    <div class="release-date">
+                        ${movie.release_date}
+                    </div>
+                    <div class="runtime"></div>
+                    <div class="genre" id="${movie.id}"></div>
+                </div>
+                <div class="overview-container">
+                    <div class="overview">
+                        ${(movie.overview).substring(0, 137)}
+                    </div>
+                </div>
+            </div>    
+        </div>
+        `
+        console.log(`movie-${movieId}`)
+        
+    }
+    
+    watchListEl.innerHTML = html;
+}
+  
 // function handleClick(event) {
 
     // if (event.target.classList.contains('add-to-watchlist')) {
